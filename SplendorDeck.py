@@ -14,15 +14,19 @@ class CardDeck:
             if level == lvl:
                 for color in Card.colors:
                     for c in range(Card.levels[level]):
-                        newcard = Card(color, {'Diamond': random.randint(0, 8), 'Cobalt': random.randint(0, 8),
-                                               'Emerald': random.randint(0, 8), 'Sapphire': random.randint(0, 8),
-                                               'Ruby': random.randint(0, 8)}, level=level)
+                        newcard = Card()
+                        newcard.color = color
+                        newcard.genCosts(2)
+                        newcard.points = 0
+                        newcard.level = level
+
                         self.deck.append(newcard)
         return self.deck
 
+
+
     def showCard(self, card):
-        print(card.level, "level card of color", card.color, "worth", card.points, "points costing",
-              (', '.join(': '.join(str(b) for b in a) for a in card.cost.items())))
+        print(card.level, "level card of color", card.color, "worth", card.points, "points costing", card.cost)
 
     def showRandomCard(self):
         print(len(self.deck))
@@ -45,15 +49,31 @@ class CardDeck:
 
 class Card:
 
-    def __init__(self, color, cost, points=0, level="Green"):
-        self.color = color
-        self.cost = cost
-        self.points = points
-        self.level = level
-    colors = ('Diamond', 'Cobalt', 'Emerald', 'Sapphire', 'Ruby')
+    colors = ('Diamond', 'Sapphire', 'Emerald', 'Ruby', 'Onyx')
     levels = {"Green": 8, "Yellow": 6, "Blue": 4}
-    costs = {'Diamond': random.randint(0, 8), 'Cobalt': random.randint(0, 8), 'Emerald': random.randint(0, 8),
-             'Sapphire': random.randint(0, 8), 'Ruby': random.randint(0, 8)}
+    costTypes = {'4costShift1': 'Whatever I am, set cost to 4 of the next color in the list'}
+
+    def __init__(self): # , color, cost, points=0, level="Green"):
+        self.color = 'Diamond'
+        self.cost = []
+        self.points = 0
+        self.level = 'Green'
+
+        for color in Card.colors:
+            cost = [color, 0]
+            self.cost.append(cost)
+
+    def genCosts(self, shift, costPool = 4):
+        for color in Card.colors:
+            if self.color == color:
+                for cost in self.cost:
+                    if cost[0] == color:
+                        currindex = Card.colors.index(color)
+                newIndex = currindex + shift
+                if newIndex >= len(self.cost):
+                    newIndex -= len(self.cost)
+                self.cost[newIndex] = [Card.colors[newIndex], 4]
+
 
 
 allDecks = []
@@ -64,6 +84,8 @@ for level in Card.levels:
 # myDeck.showRandomCard()
 
 for deck in allDecks:
-    deck.shuffleDeck()
-    for card in range(4):
-        CardDeck.dealCard(deck)
+    deck.showDeck()
+
+    #     shuffleDeck()
+    # for card in range(4):
+    #     CardDeck.dealCard(deck)
